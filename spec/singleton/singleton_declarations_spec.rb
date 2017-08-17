@@ -2,6 +2,7 @@ require_relative '../../singleton/Logger'
 require_relative '../../singleton/AppLogger'
 require_relative '../../singleton/DatabaseLogger'
 require_relative '../../singleton/SingletonLogger'
+require_relative '../../singleton/MultipleSingleton'
 require_relative '../spec_helper'
 
 
@@ -59,6 +60,7 @@ describe 'Singleton' do
       expect(databaselogger.add_log('Log database added')).to eq 'Log added'
     end
   end
+
   context 'Ruby Module' do
     it 'avoid use new method' do
   		expect{SingletonLogger.new}.to raise_error(NoMethodError, "private method `new' called for SingletonLogger:Class")
@@ -79,6 +81,39 @@ describe 'Singleton' do
       logger = SingletonLogger.instance
       expect(logger.add_log('Log added')).to eq 'Log added'
     end
-
   end
+
+  context 'Multiple instances' do
+    it 'avoid use new method' do
+  		expect{MultipleSingleton.new}.to raise_error(NoMethodError, "private method `new' called for MultipleSingleton:Class")
+    end
+
+    it 'instance a MultipleSingleton singleton' do
+      logger = MultipleSingleton.instance
+      expect(logger.class == MultipleSingleton).to be true
+    end
+
+    it 'only instance a MultipleSingleton singleton three times' do
+      singleton1 = MultipleSingleton.instance
+      singleton2 = MultipleSingleton.instance
+      singleton3 = MultipleSingleton.instance
+      singleton4 = MultipleSingleton.instance
+      expect(singleton1 != singleton2 && singleton1 != singleton3).to be true
+      expect(singleton2 != singleton3).to be true
+      expect(singleton1 === singleton4).to be true
+    end
+
+    it 'loops throught diferent instances' do
+      singleton1 = MultipleSingleton.instance
+      singleton2 = MultipleSingleton.instance
+      singleton3 = MultipleSingleton.instance
+      singleton4 = MultipleSingleton.instance
+      singleton5 = MultipleSingleton.instance
+      singleton6 = MultipleSingleton.instance
+      expect(singleton1 === singleton4).to be true
+      expect(singleton2 === singleton5).to be true
+      expect(singleton3 === singleton6).to be true
+    end
+  end
+
 end
